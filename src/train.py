@@ -3,7 +3,7 @@ import torch
 
 import numpy as np
 import pandas as pd 
-
+import pickle
 import tensorflow as tf
 
 from sklearn import metrics 
@@ -67,6 +67,11 @@ def run(df, fold, cv = True):
     tokenizer = tf.keras.preprocessing.text.Tokenizer() 
     tokenizer.fit_on_texts(df.text.values.tolist())
     
+    # save tokenizer
+    print("Saving tokenizer")
+    with open('../input/tokenizer.pickle', 'wb') as handle:
+        pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        
     # tokenize training data
     xtrain = tokenizer.texts_to_sequences(train_df.text.values)
     # tokenize validation data 
@@ -170,5 +175,5 @@ if __name__ == "__main__":
     # run(df, fold=3) 
     net = run(df, fold=0)
     model_path = config.MODEL_PATH
-    # Save
+    # save
     torch.save(net, model_path)

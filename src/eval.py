@@ -5,13 +5,13 @@ import torch.nn as nn
 import numpy as np
 import pandas as pd 
 import tensorflow as tf
+import pickle
 from sklearn import metrics
 
 import engine
 import dataset
 import config
-import preprocessing
-
+import preprocessing    
 
 if __name__ == "__main__":
     
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     # drop neutral sentiment
     df = df[df['target'] != 2]
     
-    # map positive to 1, negative sentiment to 0, neutral sentiment to 2
+    # map positive to 1, negative sentiment to 0
     df["sentiment"] = df.apply(
                 lambda x: 1 if x['target'] == 4 else 0,
                 axis = 1
@@ -37,10 +37,9 @@ if __name__ == "__main__":
                 lambda x: preprocessing.clean(x['text']),
                 axis = 1
                 )
-    
-    # fit tokenizer
-    tokenizer = tf.keras.preprocessing.text.Tokenizer() 
-    tokenizer.fit_on_texts(df.text.values.tolist())
+    # load tokenizer
+    with open('../input/tokenizer.pickle', 'rb') as handle:
+        tokenizer = pickle.load(handle)
     
     # tokenize test data 
     xtest = tokenizer.texts_to_sequences(df.text.values)
